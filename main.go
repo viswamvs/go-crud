@@ -1,23 +1,25 @@
 package main
 
 import (
-	"go-crud/config"
+	"go-crud/daos"
+	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
-func init() {
-	config.LoadEnvVariables()
+func InitializeRouter() {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/users", daos.GetUsers).Methods("GET")
+	r.HandleFunc("/user/{id}", daos.GetUser).Methods("GET")
+	r.HandleFunc("/add-user", daos.CreateUser).Methods("POST")
+	r.HandleFunc("/update-user/{id}", daos.UpdateUser).Methods("PUT")
+	r.HandleFunc("/delete-user/{id}", daos.DeleteUser).Methods("DELETE")
+
+	log.Fatal(http.ListenAndServe(":3000", r))
 }
 
 func main() {
-	router := gin.Default()
-
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "welcome",
-		})
-	})
-	router.Run()
-}
+	InitializeRouter()
+}	

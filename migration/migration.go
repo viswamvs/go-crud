@@ -1,15 +1,26 @@
-package migration
+package main
 
 import (
-	"go-crud/config"
+	"fmt"
 	"go-crud/daos/models"
+	"os"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func init() {
-	config.LoadEnvVariables()
-	config.InitializeDB()
+var DB *gorm.DB
+var err error
+
+func InitialMigration() {
+	DB, err = gorm.Open(postgres.Open(os.Getenv("DATABASEURL")), &gorm.Config{})
+	if err != nil{
+		fmt.Println(err.Error())
+		panic("Failed to connect to DB")
+	}
+	DB.AutoMigrate(&models.User{})
 }
 
-func main() {
-	config.DB.AutoMigrate(&models.User{})
+func main(){
+	InitialMigration()
 }
