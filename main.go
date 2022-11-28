@@ -1,25 +1,31 @@
 package main
 
 import (
-	"go-crud/daos"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
-func InitializeRouter() {
+func initializeRouter() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/users", daos.GetUsers).Methods("GET")
-	r.HandleFunc("/user/{id}", daos.GetUser).Methods("GET")
-	r.HandleFunc("/add-user", daos.CreateUser).Methods("POST")
-	r.HandleFunc("/update-user/{id}", daos.UpdateUser).Methods("PUT")
-	r.HandleFunc("/delete-user/{id}", daos.DeleteUser).Methods("DELETE")
+	r.HandleFunc("/users", GetUsers).Methods("GET")
+	r.HandleFunc("/user/{id}", GetUser).Methods("GET")
+	r.HandleFunc("/create-user", CreateUser).Methods("POST")
+	r.HandleFunc("/update-user/{id}", UpdateUser).Methods("PUT")
+	r.HandleFunc("/delete-user/{id}", DeleteUser).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":3000", r))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
 func main() {
-	InitializeRouter()
-}	
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	initialMigration()
+	initializeRouter()
+
+}
